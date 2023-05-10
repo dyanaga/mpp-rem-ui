@@ -47,7 +47,7 @@ export default function Login(props) {
     }
 
     function loginAsGuest() {
-        login("GUEST", "", successfulLogin, onErrorLogin)
+        login("GUEST", "guest", successfulLogin, onErrorLogin)
     }
 
     function successfulLogin(json, status) {
