@@ -9,6 +9,9 @@ import * as PropTypes from "prop-types";
 import {ENDPOINTS} from "../../../api/constants";
 import Typography from "@material-ui/core/Typography";
 import {userFormFields} from "./user-form-fields";
+import Snackbar from "@material-ui/core/Snackbar";
+import Alert from "@material-ui/lab/Alert";
+import {Redirect} from "react-router-dom";
 
 const modalStyle = makeStyles((theme) => ({
     center: {
@@ -27,6 +30,10 @@ function UserPage(props) {
     const modalClasses = modalStyle();
 
     const {mode, userId} = props;
+    const [hasError, setHasError] = React.useState(false);
+    const [errorMessage, setErrorMessage] = React.useState("Server error!");
+    const [isSuccess, setIsSuccess] = React.useState(false);
+    const [successMessage, setSuccessMessage] = React.useState("Success!");
     const [content, setContent] = React.useState(null);
     const [initialValue, setInitialValue] = React.useState(null);
     const [emptyFields, setEmptyFields] = React.useState([]);
@@ -47,13 +54,16 @@ function UserPage(props) {
         if (status === 200) {
             setInitialValue(json);
             setContent(json);
+            setSuccessMessage("Successfully updated profile.")
+            setIsSuccess(true);
         } else {
             handleError(json, status);
         }
     }
 
     const handleError = (error, status) => {
-        alert(`Error while populating users with id ${userId}!`);
+        setErrorMessage(error["message"]);
+        setHasError(true);
         console.log(status)
         console.log(error)
     }
@@ -77,17 +87,32 @@ function UserPage(props) {
     };
 
     const handleCreate = () => {
-
+        let request = new Request(`${ENDPOINTS.USERS}/${userId}`, {
+            method: 'PUT',
+            body: JSON.stringify({...content})
+        });
+        performRequest(request, handleSuccess, handleError)
     }
 
-    const handleCancel = () => {
-
-    }
 
     const crudName = "user";
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => getItem(), []);
+
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setHasError(false);
+    };
+
+    const handleCloseSuccess = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setIsSuccess(false);
+    };
 
     return (
         <Paper>
@@ -112,22 +137,29 @@ function UserPage(props) {
 
                     {
                         (mode === "update" || mode === "create") && (
-                            <Grid container className={modalClasses.buttons}>
-                                <Grid item container xs={6} justify={"center"}>
-                                    <Button onClick={handleCreate} color="secondary">
-                                        Cancel
-                                    </Button>
-                                </Grid>
                                 <Grid item container xs={6} justify={"center"}>
                                     <Button
-                                        onClick={handleCancel} color="primary">
+                                            className={modalClasses.title}
+                                        onClick={handleCreate} color="primary">
                                         Save
                                     </Button>
                                 </Grid>
-                            </Grid>
                         )
                     }
                 </FormControl>
+            {/*Error message*/}
+            <Snackbar open={hasError} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity="error">
+                    {errorMessage}
+                </Alert>
+            </Snackbar>
+            {/*Success message*/}
+            <Snackbar open={isSuccess} autoHideDuration={2000} onClose={handleCloseSuccess}>
+                <Alert onClose={handleCloseSuccess} severity="success">
+                    {successMessage}
+                </Alert>
+            </Snackbar>
+
         </Paper>
     )
 }

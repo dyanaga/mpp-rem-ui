@@ -192,7 +192,7 @@ function GenericCRUD(props) {
     }
 
     const successfulDelete = (json, status) => {
-        setSuccessMessage(`Deactivated ${crudName}.`)
+        setSuccessMessage(`Deleted ${crudName}.`)
         if (isSuccess) {
             setIsSuccess(false);
         }
@@ -200,7 +200,7 @@ function GenericCRUD(props) {
         refreshRows(page, rowsPerPage, order, orderBy);
     }
     const successfulActivate = (json, status) => {
-        setSuccessMessage(`Activated ${crudName}.`)
+        setSuccessMessage(`Added ${crudName}.`)
         if (isSuccess) {
             setIsSuccess(false);
         }

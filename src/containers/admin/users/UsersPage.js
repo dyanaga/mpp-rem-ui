@@ -16,6 +16,7 @@ const headCells = [
     {id: 'name', label: 'User name', sortable: true},
     {id: 'phoneNumber', label: 'Phone number', sortable: true},
     {id: 'type', label: 'Role', sortable: false},
+    {id: 'offers', label: 'Offers', sortable: false},
     {id: 'options', label: 'Options', sortable: false}
 ];
 
@@ -31,6 +32,9 @@ const tableCells = (row) => {
             </TableCell>
             <TableCell>
                 {row.type}
+            </TableCell>
+            <TableCell>
+                {row.offers.length}
             </TableCell>
         </>);
 }
@@ -78,20 +82,6 @@ export default function UsersPage() {
         return filters.join(";");
     }
 
-    const otherOptions = row => {
-
-        return (
-            <Button
-                className={topUpClasses.button}
-                onClick={event => {
-                    event.stopPropagation()
-                    handleTopUpOpen(row);
-                }} variant="contained" color={"primary"}>
-                {"Top Up"}
-            </Button>
-        )
-    };
-
     return (<>
         <GenericCRUD
             headCells={headCells}
@@ -100,7 +90,7 @@ export default function UsersPage() {
             tableCells={tableCells}
             defaultOptions={true}
             // otherOptions={otherOptions}
-            expand=""
+            expand="offers"
             crudName="user"
             endpoint={ENDPOINTS.USERS}
             disableActiveSort={true}

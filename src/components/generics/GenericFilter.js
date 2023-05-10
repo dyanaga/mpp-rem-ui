@@ -34,54 +34,54 @@ export default function GenericFilter({filters, onSubmit}) {
     const filterClasses = filterStyle();
 
     return (
-        <form className={filterClasses.container} noValidate onSubmit={onSubmit}>
-            <FormLabel id={"filterTitleLabel"} className={filterClasses.label}>Filters</FormLabel>
-            {filters.map(filter => {
-                if (filter.type === "datetime") {
+            <form className={filterClasses.container} noValidate onSubmit={onSubmit}>
+                <FormLabel id={"filterTitleLabel"} className={filterClasses.label}>Filters</FormLabel>
+                {filters.map(filter => {
+                    if (filter.type === "datetime") {
+                        return (
+                                <TextField
+                                        key={filter.key}
+                                        id={filter.id}
+                                        label={filter.displayName}
+                                        type="datetime-local"
+                                        defaultValue={moment(filter.default).format('YYYY-MM-DD[T]HH:mm')}
+                                        className={filterClasses.textField}
+                                        onChange={filter.onChange}
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                />
+                        )
+                    }
+                    if (filter.type === "remote-select") {
+                        return (
+                                <RemoteSelect {...filter} classname={filterClasses.textField}/>
+                        )
+                    }
                     return (
-                        <TextField
-                            key={filter.key}
-                            id={filter.id}
-                            label={filter.displayName}
-                            type="datetime-local"
-                            defaultValue={moment(filter.default).format('YYYY-MM-DD[T]HH:mm')}
-                            className={filterClasses.textField}
-                            onChange={filter.onChange}
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                        />
+                            <TextField
+                                    key={filter.key}
+                                    id={filter.id}
+                                    label={filter.displayName}
+                                    type={filter.type === "number" ? "number" : "text"}
+                                    className={filterClasses.textField}
+                                    onChange={filter.onChange}
+                                    defaultValue={filter.default}
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                            />
                     )
-                }
-                if (filter.type === "remote-select") {
-                    return (
-                        <RemoteSelect {...filter} classname={filterClasses.textField}/>
-                    )
-                }
-                return (
-                    <TextField
-                        key={filter.key}
-                        id={filter.id}
-                        label={filter.displayName}
-                        type="text"
-                        className={filterClasses.textField}
-                        onChange={filter.onChange}
-                        defaultValue={filter.default}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                    />
-                )
-            })}
-            <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                id={"submitButton"}
-                className={filterClasses.submit}
-            >
-                Filter
-            </Button>
-        </form>);
+                })}
+                <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        id={"submitButton"}
+                        className={filterClasses.submit}
+                >
+                    Filter
+                </Button>
+            </form>);
 }

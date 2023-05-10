@@ -23,6 +23,7 @@ import HomeIcon from '@material-ui/icons/Home';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import BrightnessMediumIcon from '@material-ui/icons/BrightnessMedium';
 import PersonIcon from '@material-ui/icons/Person';
+import DonutSmallIcon from '@material-ui/icons/DonutSmall';
 import {Redirect} from "react-router-dom";
 import {whoAmI} from "../api/whoami";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -32,85 +33,49 @@ import EmptyPage from "../components/EmptyPage";
 import UsersPage from "./admin/users/UsersPage";
 import {UserPage} from "./user/profile/UserPage";
 import ListingPage from "./admin/ListingPage";
-import PurchaseHistoryPage from "./user/PurchaseHistoryPage";
+import MyOffersPage from "./MyOffersPage";
+import {Statistics} from "./admin/Statistics";
 
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
     root: {
         display: 'flex',
-    },
-    toolbar: {
+    }, toolbar: {
         paddingRight: 24, // keep right padding when drawer closed
-    },
-    toolbarIcon: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        padding: '0 8px',
-        ...theme.mixins.toolbar,
-    },
-    appBar: {
-        zIndex: theme.zIndex.drawer + 1,
-        transition: theme.transitions.create(['width', 'margin'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
+    }, toolbarIcon: {
+        display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: '0 8px', ...theme.mixins.toolbar,
+    }, appBar: {
+        zIndex: theme.zIndex.drawer + 1, transition: theme.transitions.create(['width', 'margin'], {
+            easing: theme.transitions.easing.sharp, duration: theme.transitions.duration.leavingScreen,
         }),
-    },
-    appBarShift: {
-        marginLeft: drawerWidth,
-        width: `calc(100% - ${drawerWidth}px)`,
-        transition: theme.transitions.create(['width', 'margin'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
+    }, appBarShift: {
+        marginLeft: drawerWidth, width: `calc(100% - ${drawerWidth}px)`, transition: theme.transitions.create(['width', 'margin'], {
+            easing: theme.transitions.easing.sharp, duration: theme.transitions.duration.enteringScreen,
         }),
-    },
-    menuButton: {
+    }, menuButton: {
         marginRight: 36,
-    },
-    menuButtonHidden: {
+    }, menuButtonHidden: {
         display: 'none',
-    },
-    title: {
+    }, title: {
         flexGrow: 1,
-    },
-    drawerPaper: {
-        position: 'relative',
-        whiteSpace: 'nowrap',
-        width: drawerWidth,
-        transition: theme.transitions.create('width', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
+    }, drawerPaper: {
+        position: 'relative', whiteSpace: 'nowrap', width: drawerWidth, transition: theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp, duration: theme.transitions.duration.enteringScreen,
         }),
-    },
-    drawerPaperClose: {
-        overflowX: 'hidden',
-        transition: theme.transitions.create('width', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-        width: theme.spacing(7),
-        [theme.breakpoints.up('sm')]: {
+    }, drawerPaperClose: {
+        overflowX: 'hidden', transition: theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp, duration: theme.transitions.duration.leavingScreen,
+        }), width: theme.spacing(7), [theme.breakpoints.up('sm')]: {
             width: theme.spacing(9),
         },
-    },
-    appBarSpacer: theme.mixins.toolbar,
-    content: {
-        flexGrow: 1,
-        height: '100vh',
-        overflow: 'auto',
-    },
-    container: {
-        paddingTop: theme.spacing(4),
-        paddingBottom: theme.spacing(4),
-    },
-    paper: {
-        padding: theme.spacing(2),
-        display: 'flex',
-        overflow: 'auto',
-        flexDirection: 'column',
-    },
-    fixedHeight: {
+    }, appBarSpacer: theme.mixins.toolbar, content: {
+        flexGrow: 1, height: '100vh', overflow: 'auto',
+    }, container: {
+        paddingTop: theme.spacing(4), paddingBottom: theme.spacing(4),
+    }, paper: {
+        padding: theme.spacing(2), display: 'flex', overflow: 'auto', flexDirection: 'column',
+    }, fixedHeight: {
         height: 240,
     },
 }));
@@ -120,7 +85,7 @@ export default function MainPage() {
     const [selectedMenu, setSelectedMenu] = React.useState(menus.LISTING_PAGE);
     const [accountType, setAccountType] = React.useState(ACCOUNT_TYPE.NONE);
     const [userId, setUserId] = React.useState('');
-    const [mail, setUserMail] = React.useState('');
+    const [user, setUser] = React.useState('');
     const [open, setOpen] = React.useState(true);
     const [logout, setLogout] = React.useState(false);
     const [hasError, setHasError] = React.useState(false);
@@ -144,7 +109,8 @@ export default function MainPage() {
         const theme = localStorage.getItem("theme");
         if (theme === "dark") {
             localStorage.setItem("theme", "light");
-        } else {
+        }
+        else {
             localStorage.setItem("theme", "dark");
         }
         window.location.reload();
@@ -164,7 +130,7 @@ export default function MainPage() {
     const successfulWhoAmI = (json, status) => {
         setAccountType(ACCOUNT_TYPE[json.type]);
         setUserId(json.userId);
-        setUserMail(json.email);
+        setUser(json);
     }
 
     const onError = (error, status) => {
@@ -179,22 +145,21 @@ export default function MainPage() {
     useEffect(() => getWhoAmI(), []);
 
 
-    return !logout ? (
-            <div className={classes.root}>
+    return !logout ? (<div className={classes.root}>
                 <CssBaseline/>
                 <AppBar position="absolute" className={clsx(classes.appBar, open && classes.appBarShift)}>
                     <Toolbar className={classes.toolbar}>
                         <IconButton
-                            edge="start"
-                            color="inherit"
-                            aria-label="open drawer"
-                            onClick={handleDrawerOpen}
-                            className={clsx(classes.menuButton, open && classes.menuButtonHidden)}
+                                edge="start"
+                                color="inherit"
+                                aria-label="open drawer"
+                                onClick={handleDrawerOpen}
+                                className={clsx(classes.menuButton, open && classes.menuButtonHidden)}
                         >
                             <MenuIcon/>
                         </IconButton>
                         <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-                            POS Manager
+                            Real Estate Manager
                         </Typography>
                         <IconButton color="inherit" onClick={handleThemeChange}>
                             <BrightnessMediumIcon/>
@@ -205,11 +170,11 @@ export default function MainPage() {
                     </Toolbar>
                 </AppBar>
                 <Drawer
-                    variant="permanent"
-                    classes={{
-                        paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
-                    }}
-                    open={open}
+                        variant="permanent"
+                        classes={{
+                            paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
+                        }}
+                        open={open}
                 >
                     <div className={classes.toolbarIcon}>
                         <IconButton onClick={handleDrawerClose}>
@@ -225,143 +190,128 @@ export default function MainPage() {
                     </ListItem>
                     <Divider/>
 
-                    {
-                        (
-                            accountType !== ACCOUNT_TYPE.GUEST
-                        ) &&
-                        (<>
-                            <List>
-                                <ListSubheader inset>Logged in options</ListSubheader>
-                                <ListItem button onClick={event => handleMenuSelection(event, menus.USER_PROFILE)}>
-                                    <ListItemIcon>
-                                        <PersonIcon/>
-                                    </ListItemIcon>
-                                    <ListItemText primary="My profile"/>
-                                </ListItem>
-                            </List>
-                            <Divider/>
-                        </>)
-                    }
-                    {
-                            (
-                                    accountType === ACCOUNT_TYPE.CLIENT ||
-                                    accountType === ACCOUNT_TYPE.AGENT ||
-                                    accountType === ACCOUNT_TYPE.DIRECTOR ||
-                                    accountType === ACCOUNT_TYPE.ADMIN
-                            ) &&
-                            (<>
-                                <List>
-                                    <ListSubheader inset>Client options</ListSubheader>
-                                    <ListItem button onClick={event => handleMenuSelection(event, menus.EMPTY)}>
-                                        <ListItemIcon>
-                                            <PersonIcon/>
-                                        </ListItemIcon>
-                                        <ListItemText primary="My offers(TBA)"/>
-                                    </ListItem>
-                                </List>
-                                <Divider/>
-                            </>)
-                    }
-                    {
-                            (
-                                    accountType === ACCOUNT_TYPE.AGENT ||
-                                    accountType === ACCOUNT_TYPE.DIRECTOR ||
-                                    accountType === ACCOUNT_TYPE.ADMIN
-                            ) &&
-                            (<>
-                                <List>
-                                    <ListSubheader inset>Agent options</ListSubheader>
-                                    <ListItem button onClick={event => handleMenuSelection(event, menus.EMPTY)}>
-                                        <ListItemIcon>
-                                            <PersonIcon/>
-                                        </ListItemIcon>
-                                        <ListItemText primary="Received reviews (TBA)"/>
-                                    </ListItem>
-                                    <ListItem button onClick={event => handleMenuSelection(event, menus.EMPTY)}>
-                                        <ListItemIcon>
-                                            <PersonIcon/>
-                                        </ListItemIcon>
-                                        <ListItemText primary="My listings (TBA)"/>
-                                    </ListItem>
-                                    <ListItem button onClick={event => handleMenuSelection(event, menus.EMPTY)}>
-                                        <ListItemIcon>
-                                            <PersonIcon/>
-                                        </ListItemIcon>
-                                        <ListItemText primary="Received offers (TBA)"/>
-                                    </ListItem>
-                                </List>
-                                <Divider/>
-                            </>)
-                    }
-                    {
-                            (
-                                    accountType === ACCOUNT_TYPE.DIRECTOR ||
-                                    accountType === ACCOUNT_TYPE.ADMIN
-                            ) &&
-                            (<>
-                                <List>
-                                    <ListSubheader inset>Director options</ListSubheader>
+                    {(accountType !== ACCOUNT_TYPE.GUEST) && (<>
+                        <List>
+                            <ListSubheader inset>Logged in options</ListSubheader>
+                            <ListItem button onClick={event => handleMenuSelection(event, menus.USER_PROFILE)}>
+                                <ListItemIcon>
+                                    <PersonIcon/>
+                                </ListItemIcon>
+                                <ListItemText primary="My profile"/>
+                            </ListItem>
+                        </List>
+                        <Divider/>
+                    </>)}
+                    {(accountType === ACCOUNT_TYPE.CLIENT || accountType === ACCOUNT_TYPE.AGENT || accountType === ACCOUNT_TYPE.DIRECTOR || accountType === ACCOUNT_TYPE.ADMIN) && (<>
+                        <List>
+                            <ListSubheader inset>Client options</ListSubheader>
+                            <ListItem button onClick={event => handleMenuSelection(event, menus.CLIENT_OFFER_PAGE)}>
+                                <ListItemIcon>
+                                    <PersonIcon/>
+                                </ListItemIcon>
+                                <ListItemText primary="My offers"/>
+                            </ListItem>
+                        </List>
+                        <Divider/>
+                    </>)}
+                    {(accountType === ACCOUNT_TYPE.AGENT || accountType === ACCOUNT_TYPE.DIRECTOR || accountType === ACCOUNT_TYPE.ADMIN) && (<>
+                        <List>
+                            <ListSubheader inset>Agent options</ListSubheader>
+                            <ListItem button onClick={event => handleMenuSelection(event, menus.EMPTY)}>
+                                <ListItemIcon>
+                                    <PersonIcon/>
+                                </ListItemIcon>
+                                <ListItemText primary="Received reviews (TBA)"/>
+                            </ListItem>
+                            <ListItem button onClick={event => handleMenuSelection(event, menus.AGENT_LISTING_PAGE)}>
+                                <ListItemIcon>
+                                    <PersonIcon/>
+                                </ListItemIcon>
+                                <ListItemText primary="My listings"/>
+                            </ListItem>
+                            <ListItem button onClick={event => handleMenuSelection(event, menus.EMPTY)}>
+                                <ListItemIcon>
+                                    <PersonIcon/>
+                                </ListItemIcon>
+                                <ListItemText primary="Received offers (TBA)"/>
+                            </ListItem>
+                        </List>
+                        <Divider/>
+                    </>)}
+                    {(accountType === ACCOUNT_TYPE.DIRECTOR || accountType === ACCOUNT_TYPE.ADMIN) && (<>
+                        <List>
+                            <ListSubheader inset>Director options</ListSubheader>
 
-                                    <ListItem button onClick={event => handleMenuSelection(event, menus.EMPTY)}>
-                                        <ListItemIcon>
-                                            <PersonIcon/>
-                                        </ListItemIcon>
-                                        <ListItemText primary="All offers (TBA)" />
-                                    </ListItem>
-                                    <ListItem button onClick={event => handleMenuSelection(event, menus.EMPTY)}>
-                                        <ListItemIcon>
-                                            <PersonIcon/>
-                                        </ListItemIcon>
-                                        <ListItemText primary="All reviews(TBA)"/>
-                                    </ListItem>
-                                </List>
-                                <Divider/>
-                            </>)
-                    }
-                    {
-                            (
-                                    accountType === ACCOUNT_TYPE.ADMIN
-                            ) &&
-                            (<>
-                                <List>
-                                    <ListSubheader inset>Admin options</ListSubheader>
-                                    <ListItem button onClick={event => handleMenuSelection(event, menus.ADMIN_USERS)}>
-                                        <ListItemIcon>
-                                            <PersonIcon/>
-                                        </ListItemIcon>
-                                        <ListItemText primary="Users"/>
-                                    </ListItem>
-                                    <ListItem button onClick={event => handleMenuSelection(event, menus.EMPTY)}>
-                                        <ListItemIcon>
-                                            <PersonIcon/>
-                                        </ListItemIcon>
-                                        <ListItemText primary="Bulk operations(TBA)"/>
-                                    </ListItem>
-                                </List>
-                                <Divider/>
-                            </>)
-                    }
+                            <ListItem button onClick={event => handleMenuSelection(event, menus.EMPTY)}>
+                                <ListItemIcon>
+                                    <PersonIcon/>
+                                </ListItemIcon>
+                                <ListItemText primary="All offers (TBA)"/>
+                            </ListItem>
+                            <ListItem button onClick={event => handleMenuSelection(event, menus.EMPTY)}>
+                                <ListItemIcon>
+                                    <PersonIcon/>
+                                </ListItemIcon>
+                                <ListItemText primary="All reviews(TBA)"/>
+                            </ListItem>
+                            <ListItem button onClick={event => handleMenuSelection(event, menus.STATISTICS)}>
+                                <ListItemIcon>
+                                    <DonutSmallIcon/>
+                                </ListItemIcon>
+                                <ListItemText primary="Statistics"/>
+                            </ListItem>
+                        </List>
+                        <Divider/>
+                    </>)}
+                    {(accountType === ACCOUNT_TYPE.ADMIN) && (<>
+                        <List>
+                            <ListSubheader inset>Admin options</ListSubheader>
+                            <ListItem button onClick={event => handleMenuSelection(event, menus.ADMIN_USERS)}>
+                                <ListItemIcon>
+                                    <PersonIcon/>
+                                </ListItemIcon>
+                                <ListItemText primary="Users"/>
+                            </ListItem>
+                            <ListItem button onClick={event => handleMenuSelection(event, menus.EMPTY)}>
+                                <ListItemIcon>
+                                    <PersonIcon/>
+                                </ListItemIcon>
+                                <ListItemText primary="Bulk operations(TBA)"/>
+                            </ListItem>
+                        </List>
+                        <Divider/>
+                    </>)}
 
                 </Drawer>
                 <main className={classes.content}>
                     <div className={classes.appBarSpacer}/>
                     <Container maxWidth="lg" className={classes.container}>
 
-                        {selectedMenu === menus.EMPTY &&
-                        <EmptyPage/>}
+                        {selectedMenu === menus.EMPTY && <EmptyPage/>}
 
-                        {selectedMenu === menus.LISTING_PAGE &&
-                        <ListingPage
+                        {selectedMenu === menus.LISTING_PAGE && <ListingPage
                                 userId={userId}
+                                currentUser={user}
                                 accountType={accountType}
                         />}
 
-                        {selectedMenu === menus.ADMIN_USERS &&
-                        <UsersPage/>}
+                        {selectedMenu === menus.AGENT_LISTING_PAGE && <ListingPage
+                                userId={userId}
+                                currentUser={user}
+                                accountType={accountType}
+                                personal={true}
+                        />}
+
+                        {selectedMenu === menus.ADMIN_USERS && <UsersPage/>}
+
+                        {selectedMenu === menus.CLIENT_OFFER_PAGE && <MyOffersPage
+                                userId={userId}
+                        />}
+
+                        {selectedMenu === menus.STATISTICS && <Statistics/>}
 
 
-                        {selectedMenu === menus.USER_PROFILE &&
-                        <UserPage mode={"update"} userId={userId}/>}
+                        {selectedMenu === menus.USER_PROFILE && <UserPage mode={"update"} userId={userId}/>}
 
                         <Box pt={4}>
                             <Copyright/>
@@ -373,7 +323,5 @@ export default function MainPage() {
                         Server error!
                     </Alert>
                 </Snackbar>
-            </div>
-        ) :
-        (<Redirect to={{pathname: '/logout'}}/>);
+            </div>) : (<Redirect to={{pathname: '/logout'}}/>);
 }

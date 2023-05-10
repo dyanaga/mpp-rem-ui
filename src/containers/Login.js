@@ -19,28 +19,24 @@ const cookies = new Cookies();
 
 const useStyles = makeStyles((theme) => ({
     paper: {
-        marginTop: theme.spacing(8),
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-    },
-    avatar: {
-        margin: theme.spacing(1),
-        backgroundColor: theme.palette.secondary.main,
-    },
-    form: {
+        marginTop: theme.spacing(8), display: 'flex', flexDirection: 'column', alignItems: 'center',
+    }, avatar: {
+        margin: theme.spacing(1), backgroundColor: theme.palette.secondary.main,
+    }, form: {
         width: '100%', // Fix IE 11 issue.
         marginTop: theme.spacing(1),
-    },
-    submit: {
+    }, submit: {
         margin: theme.spacing(3, 0, 2),
-    },
+    }, register: {
+        margin: theme.spacing(3, 0, 2), backgroundColor: "green",
+    }
 }));
 
 export default function Login(props) {
     const classes = useStyles();
 
     useState([]);
+    const [register, setRegister] = useState(false);
     const [loggedIn, setLoggedIn] = useState(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -57,12 +53,13 @@ export default function Login(props) {
     function successfulLogin(json, status) {
         if (status === 200) {
             const expirationDate = new Date();
-            expirationDate.setTime(expirationDate.getTime() + (60*60*1000));
+            expirationDate.setTime(expirationDate.getTime() + (60 * 60 * 1000));
             cookies.set(COOKIES.TOKEN_KEY, json.token, {expires: expirationDate});
 
             setHasError(false);
             setLoggedIn(true);
-        } else {
+        }
+        else {
             cookies.remove(COOKIES.TOKEN_KEY);
             setHasError(true);
         }
@@ -80,8 +77,11 @@ export default function Login(props) {
         setPassword(event.target.value)
     }
 
-    return !loggedIn ? (
-            <Container component="main" maxWidth="xs">
+    if(register) {
+        return (<Redirect to={{pathname: '/register'}}/>)
+    }
+
+    return !loggedIn ? (<Container component="main" maxWidth="xs">
                 <CssBaseline/>
                 <div className={classes.paper}>
                     <Avatar className={classes.avatar}>
@@ -93,63 +93,65 @@ export default function Login(props) {
                     <FormControl className={classes.form} noValidate onSubmit={event => {
                     }}>
                         <TextField
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="username"
-                            label="Username"
-                            name="username"
-                            autoComplete="username"
-                            autoFocus
-                            onChange={changeUsername}
+                                variant="outlined"
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="username"
+                                label="Username"
+                                name="username"
+                                autoComplete="username"
+                                autoFocus
+                                onChange={changeUsername}
                         />
                         <TextField
-                            variant="outlined"
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="password"
-                            label="Password"
-                            type="password"
-                            id="password"
-                            autoComplete="current-password"
-                            onChange={changePassword}
+                                variant="outlined"
+                                margin="normal"
+                                required
+                                fullWidth
+                                name="password"
+                                label="Password"
+                                type="password"
+                                id="password"
+                                autoComplete="current-password"
+                                onChange={changePassword}
                         />
-                        {
-                            hasError &&
-                            <Typography component="h1" color="error">
-                                Invalid username or password, please try again.
-                            </Typography>
+                        {hasError && <Typography component="h1" color="error">
+                            Invalid username or password, please try again.
+                        </Typography>
 
                         }
                         <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            color="primary"
-                            className={classes.submit}
-                            onClick={onLogin}
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                color="primary"
+                                className={classes.submit}
+                                onClick={onLogin}
                         >
                             Log In
                         </Button>
                         <Button
-                            fullWidth
-                            variant="contained"
-                            color="secondary"
-                            className={classes.submit}
-                            onClick={loginAsGuest}
+                                fullWidth
+                                variant="contained"
+                                color="secondary"
+                                className={classes.submit}
+                                onClick={loginAsGuest}
                         >
                             Log In as Guest
+                        </Button>
+                        <Button
+                                fullWidth
+                                variant="contained"
+                                className={classes.register}
+                                onClick={ () => setRegister(true)}
+                        >
+                            Register as Client
                         </Button>
                     </FormControl>
                 </div>
                 <Box mt={8}>
                     <Copyright/>
                 </Box>
-            </Container>
-        ) :
-        (
-            <Redirect to={{pathname: '/'}}/>
-        )
+            </Container>) : (<Redirect to={{pathname: '/'}}/>)
 }

@@ -4,7 +4,10 @@ const ENDPOINTS = {
     LOGIN: `${environment.backendUrl}/v1/login`,
     WHO_AM_I: `${environment.backendUrl}/v1/who-am-i`,
     LISTINGS: `${environment.backendUrl}/v1/listings`,
-    USERS: `${environment.backendUrl}/v1/users`
+    BASE: `${environment.backendUrl}/v1`,
+    USERS: `${environment.backendUrl}/v1/users`,
+    REGISTER: `${environment.backendUrl}/v1/register`,
+    STATISTICS: `${environment.backendUrl}/v1/statistics`
 };
 
 export {ENDPOINTS}

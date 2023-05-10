@@ -2,8 +2,7 @@ import React from 'react';
 import TableCell from '@material-ui/core/TableCell';
 import {GenericCRUD} from "../../components/generics/GenericCRUD";
 import {ENDPOINTS} from "../../api/constants";
-import {dateStringToRomanianFormat, getNowWithoutSeconds, getYesterday, isToday} from "../../utils/DateUtils";
-import moment from "moment";
+import {dateStringToRomanianFormat} from "../../utils/DateUtils";
 import Button from "@material-ui/core/Button";
 import {ACCOUNT_TYPE} from "../../constants";
 import {GenericModal} from "../../components/generics/GenericModal";
@@ -12,26 +11,22 @@ import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 
 
-const headCells = [
-    {id: 'name', label: 'Name', sortable: false},
-    {id: 'neighbourhood', label: 'Neighbourhood', sortable: false},
-    {id: 'size', label: 'Size (m^2)', sortable: false},
-    {id: 'price', label: 'Price', sortable: false},
-    {id: 'offers', label: 'Offers', sortable: false},
-    {id: 'options', label: 'Options', sortable: false},
-];
-
 const modalFields = [
     {
         id: 'name',
         label: 'Name',
         type: "text",
+        required: true,
+        isValid: (text) => {
+            return text !== null && text.length > 3 && text.length < 50;
+        },
         getValue: (body) => {
             return body.name
         }
     },
     {
         id: 'address',
+        required: true,
         label: 'Address',
         type: "text",
         getValue: (body) => {
@@ -40,6 +35,7 @@ const modalFields = [
     },
     {
         id: 'rooms',
+        required: true,
         label: 'Rooms',
         type: "text",
         getValue: (body) => {
@@ -49,6 +45,7 @@ const modalFields = [
     {
         id: 'description',
         label: 'Description',
+        required: true,
         type: 'text-multiline',
         getValue: (body) => {
             return body.description
@@ -57,6 +54,7 @@ const modalFields = [
     {
         id: 'size',
         label: 'Size',
+        required: true,
         type: "text",
         getValue: (body) => {
 
@@ -66,6 +64,7 @@ const modalFields = [
     {
         id: 'neighbourhood',
         label: 'Neighbourhood',
+        required: true,
         type: "text",
         getValue: (body) => {
             return body.neighbourhood;
@@ -74,6 +73,7 @@ const modalFields = [
     {
         id: 'suggestedPrice',
         label: 'Price',
+        required: true,
         type: "text",
         getValue: (body) => {
             return body.suggestedPrice;
@@ -84,6 +84,7 @@ const modalFields = [
         label: 'Offers',
         type: 'list',
         borderColor: "green",
+
         fields: [
             {
                 id: 'price',
@@ -126,14 +127,14 @@ const modalFields = [
                 type: 'text'
             }
         ],
-        rowTemplate: {name: '', email: '', phoneNumber:''}
+        rowTemplate: {name: '', email: '', phoneNumber: ''}
     },
 ]
 
 const offerModalFields = [{
     id: 'price',
     label: 'Price',
-    type: "text",
+    type: "number",
 },
     {
         id: 'comment',
@@ -145,12 +146,16 @@ export default function ListingPage(props) {
 
     const {
         accountType,
+        currentUser,
         userId,
+        personal = false
     } = props;
 
+    const [userIdAux, setUserId] = React.useState(userId);
     const [name, setName] = React.useState('');
     const [address, setAddress] = React.useState('');
     const [neighbourhood, setNeighbourhood] = React.useState('');
+    const [rooms, setRooms] = React.useState(null);
     const [currentOffers, setCurrentOffers] = React.useState([]);
     const [currentAgent, setCurrentAgent] = React.useState([]);
     const [listingId, setListingId] = React.useState('');
@@ -171,6 +176,9 @@ export default function ListingPage(props) {
 
     const handleChangeNeighbourhood = (event) => {
         setNeighbourhood(event.target.value);
+    };
+    const handleChangeRooms = (event) => {
+        setRooms(event.target.value);
     };
 
     const filters = [
@@ -198,8 +206,30 @@ export default function ListingPage(props) {
             default: neighbourhood,
             onChange: handleChangeNeighbourhood
         },
+        {
+            id: "roomFiler",
+            key: "genericFilterRoomFilter",
+            displayName: "Rooms",
+            type: "number",
+            default: rooms,
+            onChange: handleChangeRooms
+        },
 
     ];
+    let headCells = [
+        {id: 'name', label: 'Name', sortable: true},
+        {id: 'neighbourhood', label: 'Neighbourhood', sortable: true},
+        {id: 'size', label: 'Size (m^2)', sortable: true},
+        {id: 'rooms', label: 'Rooms', sortable: true},
+        {id: 'price', label: 'Price', sortable: true},
+        {id: 'offers', label: 'Offers', sortable: false},
+        {id: 'options', label: 'Options', sortable: false},
+    ];
+
+    if (accountType !== ACCOUNT_TYPE.GUEST && accountType !== ACCOUNT_TYPE.CLIENT) {
+        headCells.push({id: 'delete', label: 'Role based', sortable: false})
+    }
+
 
     const handleModalSave = (body) => {
         createOffer(body.listingId, body, successfulCreate, onCreateError)
@@ -272,6 +302,10 @@ export default function ListingPage(props) {
     const getFilter = () => {
         let filters = [];
 
+        if (personal) {
+            filters.push(`agent==${userId}`);
+        }
+
         if (name.length > 0) {
             filters.push(`name=like=${name}`);
         }
@@ -284,102 +318,119 @@ export default function ListingPage(props) {
             filters.push(`neighbourhood=like=${neighbourhood}`);
         }
 
+        if (rooms !== null && rooms.length > 0) {
+            filters.push(`rooms==${rooms}`);
+        }
+
         return filters.join(";");
     }
 
 
     const tableCells = (row) => {
         return (
-            <>
-                <TableCell component="th" scope="row">
-                    {row.name}
-                </TableCell>
-                <TableCell>
-                    {row.neighbourhood}
-                </TableCell>
-                <TableCell>
-                    {row.size}
-                </TableCell>
-                <TableCell>
-                    {row.suggestedPrice} Euro
-                </TableCell>
-                <TableCell>
-                    {row.offers.length}
-                </TableCell>
+                <>
+                    <TableCell component="th" scope="row">
+                        {row.name}
+                    </TableCell>
+                    <TableCell>
+                        {row.neighbourhood}
+                    </TableCell>
+                    <TableCell>
+                        {row.size}
+                    </TableCell>
+                    <TableCell>
+                        {row.rooms}
+                    </TableCell>
+                    <TableCell>
+                        {row.suggestedPrice} Euro
+                    </TableCell>
+                    <TableCell>
+                        {row.offers.length}
+                    </TableCell>
 
-                <TableCell>
-                    {
-                        accountType !== ACCOUNT_TYPE.GUEST && accountType !== ACCOUNT_TYPE.CLIENT ?
-                        (
-                        row.offers.filter(offer => offer.userId === userId).length === 0 && !currentOffers.includes(row.listingId) ?
-                        (
-                        <Button onClick={event => {
-                        event.stopPropagation();
-                        setListingId(row.listingId);
-                        setOfferModalOpen(true);
-                    }} variant="contained" color={"primary"}>
-                        Add offer
-                        </Button>
-                        )
-                        :
-                        "Offered"
-                        ) : ('')
-                    }
+                    <TableCell>
+                        {
+                            accountType !== ACCOUNT_TYPE.GUEST && accountType !== ACCOUNT_TYPE.CLIENT ?
+                                    (
+                                            row.offers.filter(offer => offer.userId === userId).length === 0 && !currentOffers.includes(row.listingId) ?
+                                                    (
+                                                            <Button onClick={event => {
+                                                                event.stopPropagation();
+                                                                setListingId(row.listingId);
+                                                                setOfferModalOpen(true);
+                                                                setUserId(currentUser['id']);
+                                                            }} variant="contained" color={"primary"}>
+                                                                Add offer
+                                                            </Button>
+                                                    )
+                                                    :
+                                                    "Offered"
+                                    ) : ('')
+                        }
 
-                    {
-                    accountType !== ACCOUNT_TYPE.GUEST && accountType !== ACCOUNT_TYPE.CLIENT ?
-                    (
-                        row.users.filter(user => user.userId === userId).length === 0 && !currentAgent.includes(row.listingId) ?
-                            (
-                                <Button onClick={event => {
-                                    event.stopPropagation();
-                                    enroll(row.listingId, successfulEnroll, onEnrollError)
-                                }} variant="contained" color={"primary"}>
-                                    Enroll as agent
-                                </Button>
-                            )
-                            :
-                                <Button onClick={event => {
-                                    event.stopPropagation();
-                                    quit(row.listingId, successfulQuit, onQuitError)
-                                }} variant="contained" color={"secondary"}>
-                                    Quit as agent
-                                </Button>
-                    ) : ('')
-                    }
-                </TableCell>
-            </>);
+                        {
+                            accountType !== ACCOUNT_TYPE.GUEST && accountType !== ACCOUNT_TYPE.CLIENT ?
+                                    (
+                                            row.users.filter(user => user.userId === userId).length === 0 ?
+                                                    // currentAgent.includes(row.listingId) ?
+                                                    (
+                                                            <Button onClick={event => {
+                                                                event.stopPropagation();
+                                                                enroll(row.listingId, (json, status) => {
+                                                                    successfulEnroll(json, status);
+                                                                    row.users.push(currentUser);
+                                                                    setUserId(currentUser['id']);
+                                                                }, onEnrollError)
+                                                            }} variant="contained" color={"primary"}>
+                                                                Enroll as agent
+                                                            </Button>
+                                                    )
+                                                    :
+                                                    <Button onClick={event => {
+                                                        event.stopPropagation();
+                                                        quit(row.listingId, (json, status) => {
+                                                            successfulQuit(json, status);
+                                                            row.users = row.users.filter(user => user.userId !== userId);
+                                                            setUserId(currentUser['id']);
+                                                        }, onQuitError)
+                                                    }} variant="contained" color={"secondary"}>
+                                                        Quit as agent
+                                                    </Button>
+                                    ) : ('')
+                        }
+                    </TableCell>
+                </>);
     }
 
     return (<>
         {
                 offerModalOpen &&
-            <GenericModal open={offerModalOpen}
-            crudName={"offer"}
-            fields={offerModalFields}
-            mode='create'
-            initialValue={{price: 0, comment: '', listingId: listingId}}
-            onCancel={handleModalClose}
-            onSave={handleModalSave}
-            />
+                <GenericModal open={offerModalOpen}
+                              crudName={"offer"}
+                              fields={offerModalFields}
+                              mode='create'
+                              initialValue={{price: 0, comment: '', listingId: listingId}}
+                              onCancel={handleModalClose}
+                              onSave={handleModalSave}
+                />
         }
         <GenericCRUD
-            headCells={headCells}
-            modalFields={modalFields}
-            idField="listingId"
-            tableCells={tableCells}
-            crudName="listing"
-            endpoint={ENDPOINTS.LISTINGS}
-            expand="users,offers"
-            filters={filters}
-            getFilter={getFilter}
-            defaultBody={{name: "", address: "", rooms: 1, description: "", size: 5, neighbourhood: "", suggestedPrice: 0, offers: []}}
-            disableCreate={accountType === ACCOUNT_TYPE.GUEST || accountType === ACCOUNT_TYPE.CLIENT}
-            disableUpdate
-            disableActiveSort
-            initialOrder="asc"
-            initialOrderBy="name"
-            defaultOptions={false}
+                headCells={headCells}
+                modalFields={modalFields}
+                idField="listingId"
+                tableCells={tableCells}
+                crudName="listing"
+                endpoint={ENDPOINTS.LISTINGS}
+                expand="users,offers"
+                filters={filters}
+                getFilter={getFilter}
+                defaultBody={{name: "", address: "", rooms: 1, description: "", size: 5, neighbourhood: "", suggestedPrice: 0, offers: [], users: []}}
+                disableCreate={accountType === ACCOUNT_TYPE.GUEST || accountType === ACCOUNT_TYPE.CLIENT}
+                disableUpdate
+                disableActiveSort
+                initialOrder="asc"
+                initialOrderBy="name"
+                defaultOptions={accountType !== ACCOUNT_TYPE.GUEST && accountType !== ACCOUNT_TYPE.CLIENT}
         />
         {/*Error message*/}
         <Snackbar open={hasError} autoHideDuration={6000} onClose={handleClose}>

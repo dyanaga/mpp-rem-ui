@@ -5,6 +5,9 @@ export const menus = {
 
     ADMIN_USERS: 205,
     LISTING_PAGE: 206,
+    AGENT_LISTING_PAGE: 207,
+    CLIENT_OFFER_PAGE: 208,
+    STATISTICS: 999,
 
 
 };

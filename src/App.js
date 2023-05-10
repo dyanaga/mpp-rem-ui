@@ -7,6 +7,7 @@ import Login from "./containers/Login";
 import MainPage from "./containers/MainPage";
 import PrivateRoute from "./components/PrivateRoute";
 import Logout from "./containers/Logout";
+import {Register} from "./containers/Register";
 
 function App() {
     return (
@@ -14,6 +15,9 @@ function App() {
             <Switch>
                 <Route exact path='/login'>
                     <Login/>
+                </Route>
+                <Route exact path='/register'>
+                    <Register/>
                 </Route>
                 <Route exact path='/logout'>
                     <Logout/>
