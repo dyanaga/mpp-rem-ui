@@ -1,7 +1,5 @@
 pipeline {
   agent any
-  environment {
-  }
   parameters {
     string(name: 'image_version', defaultValue: 'undefined')
   }
@@ -18,7 +16,7 @@ pipeline {
     stage('Build') {
       steps {
         script {
-            sh "npm run build --env=prod"
+            sh "CI= npm run build --env=prod"
         }
       }
     }

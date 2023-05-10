@@ -82,4 +82,3 @@ deployment_keys-private
 deployment_keys.tar
 
 package-lock.json
-src/environments/environment.js
