@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  rem_fe:
+    image: rem_fe
+    container_name: rem_fe
+    build: .
+    ports:
+      - "8091:80"
