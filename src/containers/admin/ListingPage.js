@@ -80,6 +80,19 @@ const modalFields = [
         }
     },
     {
+        id: 'creatorUser',
+        label: 'Created by',
+        required: false,
+        type: "text",
+        isDisabled: () => true,
+        getter: (value) => {
+            if(value === undefined) {
+                return "Created by you"
+            }
+            return value ? value.name : 'Unknown';
+        }
+    },
+    {
         id: 'offers',
         label: 'Offers',
         type: 'list',
@@ -268,7 +281,7 @@ export default function ListingPage(props) {
     };
 
     const onCreateError = (error, status) => {
-        setErrorMessage(`Error creating offer!\nStatus:${status}`)
+        setErrorMessage(`Error creating offer!\nStatus:${status}\nMessage:${error.message}`)
         console.log(error);
         setHasError(true);
     }
@@ -421,7 +434,7 @@ export default function ListingPage(props) {
                 tableCells={tableCells}
                 crudName="listing"
                 endpoint={ENDPOINTS.LISTINGS}
-                expand="users,offers"
+                expand="users,offers,creator"
                 filters={filters}
                 getFilter={getFilter}
                 defaultBody={{name: "", address: "", rooms: 1, description: "", size: 5, neighbourhood: "", suggestedPrice: 0, offers: [], users: []}}

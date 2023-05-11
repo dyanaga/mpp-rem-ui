@@ -12,6 +12,8 @@ import {userFormFields} from "./user-form-fields";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import {Redirect} from "react-router-dom";
+import {COOKIES} from "../../../constants";
+import Cookies from "universal-cookie";
 
 const modalStyle = makeStyles((theme) => ({
     center: {
@@ -25,6 +27,8 @@ const modalStyle = makeStyles((theme) => ({
         marginTop: theme.spacing(5),
     }
 }));
+
+const cookies = new Cookies();
 
 function UserPage(props) {
     const modalClasses = modalStyle();
@@ -47,12 +51,22 @@ function UserPage(props) {
         let request = new Request(`${ENDPOINTS.USERS}/${userId}`, {
             method: 'GET',
         });
-        performRequest(request, handleSuccess, handleError)
+        performRequest(request, handleSuccessLoad, handleError)
+    }
+
+    const handleSuccessLoad = (json, status) => {
+        if (status === 200) {
+            setInitialValue(json);
+            setContent(json);
+        } else {
+            handleError(json, status);
+        }
     }
 
     const handleSuccess = (json, status) => {
         if (status === 200) {
             setInitialValue(json);
+            cookies.set(COOKIES.PAGE_SIZE, json.pagePreference);
             setContent(json);
             setSuccessMessage("Successfully updated profile.")
             setIsSuccess(true);
@@ -60,6 +74,7 @@ function UserPage(props) {
             handleError(json, status);
         }
     }
+
 
     const handleError = (error, status) => {
         setErrorMessage(error["message"]);
@@ -87,6 +102,7 @@ function UserPage(props) {
     };
 
     const handleCreate = () => {
+        console.log(content);
         let request = new Request(`${ENDPOINTS.USERS}/${userId}`, {
             method: 'PUT',
             body: JSON.stringify({...content})
@@ -137,7 +153,7 @@ function UserPage(props) {
 
                     {
                         (mode === "update" || mode === "create") && (
-                                <Grid item container xs={6} justify={"center"}>
+                                <Grid item container xs={6} justifyContent={"center"}>
                                     <Button
                                             className={modalClasses.title}
                                         onClick={handleCreate} color="primary">

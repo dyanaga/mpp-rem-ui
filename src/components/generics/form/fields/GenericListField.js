@@ -45,7 +45,7 @@ function GenericListField(props) {
                     {
                         content.map((item, index) =>
                             <Box borderLeft={1} borderColor={borderColor} key={`${id}[${index}]`}>
-                                <Box marginLeft={1} marginTop={2} alignItems={"center"} display={"flex"}
+                                <Box marginLeft={1}  alignItems={"center"} display={"flex"}
                                      flexDirection={"column"}>
                                     <GenericFieldContainer id={`${id}[${index}]`}
                                                            mode={mode}

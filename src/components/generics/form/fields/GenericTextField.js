@@ -6,9 +6,9 @@ import {v4 as uuid} from 'uuid';
 
 function GenericTextField(props) {
 
-    const {isValid, onValidityChange, onEmptinessChange, onChange, isDisabled} = props;
+    const {isValid, getter, onValidityChange, onEmptinessChange, onChange, isDisabled} = props;
     const {id, label, type, required = false, errorMessage, mode = "view", multiline} = props;
-    const initialValue = props.initialValue == null ? '' : props.initialValue
+    const initialValue = !getter ? (props.initialValue == null ? '' : props.initialValue) : getter(props.initialValue);
     const propagateValidity = onValidityChange != null;
     const propagateEmptiness = onEmptinessChange != null;
     const propagateChange = onChange != null;
@@ -96,6 +96,7 @@ function GenericTextField(props) {
         helperText={!valid ? errorMessage : ""}
         onChange={handleValueChange}
         multiline={multiline}
+        InputLabelProps={type === "datetime-local" ? { shrink: true } : {}}
         fullWidth
     />;
 }
@@ -103,7 +104,7 @@ function GenericTextField(props) {
 const GenericTextFieldPropTypes = {
     id: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
-    type: PropTypes.oneOf(['text', 'number', 'password']).isRequired,
+    type: PropTypes.oneOf(['text', 'number', 'password', 'datetime-local']).isRequired,
     required: PropTypes.bool,
     errorMessage: PropTypes.string,
     initialValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),

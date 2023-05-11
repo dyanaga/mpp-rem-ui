@@ -1,5 +1,6 @@
 const COOKIES = {
-    TOKEN_KEY: "session_key"
+    TOKEN_KEY: "session_key",
+    PAGE_SIZE: "page_size",
 };
 
 const ACCOUNT_TYPE = {

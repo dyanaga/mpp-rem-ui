@@ -45,23 +45,6 @@ function yearMonthDayToDayMonthYear(date) {
     return `${day}-${month}-${year}`
 }
 
-function getQuarterName(month) {
-    if (month >= Q1 && month < Q2) {
-        return "Q1";
-    }
-    if (month === Q2 || month < Q3) {
-        return "Q2";
-    }
-    if (month >= Q3 && month < Q4) {
-        return "Q3";
-    }
-    if (month >= Q4 && month < Q1) {
-        return "Q4";
-    }
-    //Used for testing
-    return "Unknown"
-}
-
 function getYears() {
     const years = []
     const currentYear = new Date().getFullYear();
@@ -73,30 +56,6 @@ function getYears() {
         })
     }
     return years;
-}
-
-function getQuarters() {
-    const index = new Date();
-    index.setFullYear(2020);
-    index.setMonth(Q4)
-    index.setDate(1)
-    const date = new Date();
-    const quarters = []
-    while (index.getFullYear() < date.getFullYear() || index.getMonth() < date.getMonth()) {
-        const month = index.getMonth();
-        const tempDate = new Date();
-        tempDate.setFullYear(index.getFullYear());
-        tempDate.setMonth(index.getMonth() + 3);
-        tempDate.setDate(1);
-        const quarter = {
-            name: `${getQuarterName(month)} ${index.getFullYear()}`,
-            start: `${dateToDayMonthYearString(index)}`,
-            end: `${dateToDayMonthYearString(tempDate)}`,
-        }
-        quarters.push(quarter);
-        index.setMonth(index.getMonth() + 3);
-    }
-    return quarters;
 }
 
 function getNowWithoutSeconds() {
@@ -126,7 +85,6 @@ export {
     dateToYearMonthDayString,
     yearMonthDayToDayMonthYear,
     getYears,
-    getQuarters,
     getNowWithoutSeconds,
     getYesterday
 }

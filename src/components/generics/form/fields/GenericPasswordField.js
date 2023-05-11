@@ -53,6 +53,7 @@ function GenericPasswordField(props) {
 
             <GenericTextField
                 {...confirmProps}
+                    errorMessage="The passwords should match"
             />
             {
                 !passwordsEqual &&

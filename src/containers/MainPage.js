@@ -28,15 +28,17 @@ import {Redirect} from "react-router-dom";
 import {whoAmI} from "../api/whoami";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
-import {ACCOUNT_TYPE} from "../constants";
+import {ACCOUNT_TYPE, COOKIES} from "../constants";
 import EmptyPage from "../components/EmptyPage";
 import UsersPage from "./admin/users/UsersPage";
 import {UserPage} from "./user/profile/UserPage";
 import ListingPage from "./admin/ListingPage";
 import MyOffersPage from "./MyOffersPage";
 import {Statistics} from "./admin/Statistics";
+import Cookies from "universal-cookie";
 
 const drawerWidth = 240;
+const cookies = new Cookies();
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -130,6 +132,7 @@ export default function MainPage() {
     const successfulWhoAmI = (json, status) => {
         setAccountType(ACCOUNT_TYPE[json.type]);
         setUserId(json.userId);
+        cookies.set(COOKIES.PAGE_SIZE, json.pagePreference);
         setUser(json);
     }
 

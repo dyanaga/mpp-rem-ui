@@ -12,6 +12,8 @@ import {indigo, yellow} from "@material-ui/core/colors";
 import {GenericModal} from "./GenericModal";
 import * as PropTypes from "prop-types";
 import {GenericFieldContainerFieldsPropTypes} from "./form/containers/GenericFieldContainer";
+import Cookies from "universal-cookie";
+import {COOKIES} from "../../constants";
 
 const createButtonStyle = makeStyles((theme) => ({
     button: {
@@ -21,6 +23,7 @@ const createButtonStyle = makeStyles((theme) => ({
     }
 }));
 
+const cookies = new Cookies();
 
 function GenericCRUD(props) {
     const createButtonClasses = createButtonStyle();
@@ -47,9 +50,15 @@ function GenericCRUD(props) {
     } = props;
 
     const initialPage = 0;
-    const initialRowsPerPage = 10;
+    let pageSize = cookies.get(COOKIES.PAGE_SIZE);
+    let initialRowsPerPage = 10;
+    if(pageSize && pageSize > 0) {
+        initialRowsPerPage = pageSize
+    }
+
 
     const [page, setPage] = React.useState(initialPage);
+    const [pageCount, setPageCount] = React.useState(initialPage);
     const [count, setCount] = React.useState(initialRowsPerPage);
     const [order, setOrder] = React.useState(initialOrder);
     const [orderBy, setOrderBy] = React.useState(initialOrderBy);
@@ -95,7 +104,8 @@ function GenericCRUD(props) {
             setModalType("update");
             setModalContent(content)
             setModalOpen(true);
-        } else if (!disableView) {
+        }
+        else if (!disableView) {
             setModalType("view");
             setModalContent(content)
             setModalOpen(true);
@@ -153,7 +163,8 @@ function GenericCRUD(props) {
 
         if (body[idField] === undefined) {
             createItem(endpoint, body, successfulCreate, onCreateError)
-        } else {
+        }
+        else {
             updateItem(endpoint, body[idField], body, successfulUpdate, onUpdateError)
         }
     }
@@ -164,9 +175,11 @@ function GenericCRUD(props) {
             let content = json.content;
             setRows(content);
             let totalElements = json.totalElements;
-
+            let pages = json.pages;
+            setPageCount(pages)
             setCount(totalElements);
-        } else {
+        }
+        else {
             setHasError(true);
             setErrorMessage(`Error while getting ${crudName}`);
         }
@@ -234,7 +247,7 @@ function GenericCRUD(props) {
     }
 
     const onCreateError = (error, status) => {
-        setErrorMessage(`Error creating ${crudName}!\nStatus:${status}`)
+        setErrorMessage(`Error creating ${crudName}!\nMessage:${error.message}`)
         console.log(error);
         setHasError(true);
     }
@@ -245,61 +258,62 @@ function GenericCRUD(props) {
     //HTML providers
     const rowProvider = (row, defaultId) => {
         return (
-            <TableRow key={defaultId} onClick={event => handleTableRowClick(row)} hover={true}>
-                {tableCells(row)}
-                {
-                    defaultOptions && (
-                        <TableCell>
-                            <Button onClick={event => {
-                                event.stopPropagation()
-                                handleDeactivate(row[idField]);
-                            }} variant="contained" color="secondary">
-                                Delete
-                            </Button>
-                            {otherOptions && otherOptions(row)}
-                        </TableCell>
-                    )
-                }
-            </TableRow>
+                <TableRow key={defaultId} onClick={event => handleTableRowClick(row)} hover={true}>
+                    {tableCells(row)}
+                    {
+                            defaultOptions && (
+                                    <TableCell>
+                                        <Button onClick={event => {
+                                            event.stopPropagation()
+                                            handleDeactivate(row[idField]);
+                                        }} variant="contained" color="secondary">
+                                            Delete
+                                        </Button>
+                                        {otherOptions && otherOptions(row)}
+                                    </TableCell>
+                            )
+                    }
+                </TableRow>
         );
     }
     const createButton = !disableCreate ? (
-        <Button
-            onClick={handleCreate} variant="contained" className={createButtonClasses.button} color={"primary"}>
-            Create {crudName}
-        </Button>
+            <Button
+                    onClick={handleCreate} variant="contained" className={createButtonClasses.button} color={"primary"}>
+                Create {crudName}
+            </Button>
     ) : '';
 
     return (<>
         {
-            modalOpen &&
-            <GenericModal open={modalOpen}
-                          crudName={crudName}
-                          fields={modalFields}
-                          mode={modalType}
-                          initialValue={modalContent}
-                          onCancel={handleModalClose}
-                          onSave={handleModalSave}
-            />
+                modalOpen &&
+                <GenericModal open={modalOpen}
+                              crudName={crudName}
+                              fields={modalFields}
+                              mode={modalType}
+                              initialValue={modalContent}
+                              onCancel={handleModalClose}
+                              onSave={handleModalSave}
+                />
         }
 
         <GenericTable
-            headers={headCells}
-            filters={(
-                <GenericFilter filters={filters}
-                               onSubmit={handleFilterSubmit}/>
-            )}
-            buttons={createButton}
-            rows={rows}
-            rowProvider={rowProvider}
-            page={page}
-            onChangePage={handleChangePage}
-            onChangeRowsPerPage={handleChangeRowsPerPage}
-            onChangeSort={handleRequestSort}
-            rowsPerPage={rowsPerPage}
-            count={count}
-            order={order}
-            orderBy={orderBy}
+                headers={headCells}
+                filters={(
+                        <GenericFilter filters={filters}
+                                       onSubmit={handleFilterSubmit}/>
+                )}
+                buttons={createButton}
+                rows={rows}
+                rowProvider={rowProvider}
+                page={page}
+                pageCount={pageCount}
+                onChangePage={handleChangePage}
+                onChangeRowsPerPage={handleChangeRowsPerPage}
+                onChangeSort={handleRequestSort}
+                rowsPerPage={rowsPerPage}
+                count={count}
+                order={order}
+                orderBy={orderBy}
         />
 
         {/*Error message*/}

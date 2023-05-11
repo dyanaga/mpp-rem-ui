@@ -33,7 +33,6 @@ function Register(props) {
     const [invalidFields, setInvalidFields] = React.useState([]);
 
     const handleContentChange = (id, value) => {
-        console.log(value);
         setContent({...value});
     };
 

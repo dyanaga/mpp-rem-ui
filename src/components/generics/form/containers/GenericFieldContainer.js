@@ -6,6 +6,8 @@ import {GenericListField} from "../fields/GenericListField";
 import {GenericSelectField} from "../fields/GenericSelectField";
 import {GenericPasswordField} from "../fields/GenericPasswordField";
 import {GenericRemoteSelectField} from "../fields/GenericRemoteSelectField";
+import * as moment from "moment/moment";
+import TextField from "@material-ui/core/TextField";
 
 function GenericFieldContainer(props) {
 
@@ -48,7 +50,7 @@ function GenericFieldContainer(props) {
                             value = initialValue[field.id];
                         }
                     }
-                    if (field.type === "text" || field.type === "number" || field.type === "text-multiline") {
+                    if (field.type === "text" || field.type === "number" || field.type === "text-multiline" || field.type === "datetime-local") {
                         return (
                             <GenericTextField key={`${id}.${field.id}`}
                                               type={field.type === "text-multiline" ? "text" : field.type}
@@ -63,6 +65,7 @@ function GenericFieldContainer(props) {
                                               onValidityChange={handleValidityChange}
                                               onEmptinessChange={handleEmptinessChange}
                                               isValid={field.isValid}
+                                              getter={field.getter}
                                               onChange={handleContentChange}
                             />
                         )
@@ -159,7 +162,7 @@ function GenericFieldContainer(props) {
 const GenericFieldContainerFieldsPropTypes = PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
-    type: PropTypes.oneOf(['text', 'number', 'checkbox', 'text-multiline', 'list', 'select-local', 'select-remote', 'password']),
+    type: PropTypes.oneOf(['text', 'number', 'checkbox', 'datetime-local', 'text-multiline', 'list', 'select-local', 'select-remote', 'password']),
     required: PropTypes.bool,
     errorMessage: PropTypes.string,
     borderColor: PropTypes.string,

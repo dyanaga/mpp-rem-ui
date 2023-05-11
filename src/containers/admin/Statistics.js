@@ -8,7 +8,7 @@ import {listingsByOffers, listingsPerNeighbourhood} from "../../api/statistics";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import {MyPieChart} from "../../components/MyPieChart";
-import {dateToDayMonthYearString, getQuarters, getYears} from "../../utils/DateUtils";
+import {dateToDayMonthYearString, getYears} from "../../utils/DateUtils";
 import {makeStyles} from "@material-ui/core/styles";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
@@ -35,18 +35,6 @@ fromDate.setMonth(fromDate.getMonth() - 1);
 const lastYearDate = new Date();
 lastYearDate.setFullYear(lastYearDate.getFullYear() - 1);
 
-const fromDateString = dateToDayMonthYearString(fromDate);
-const untilDateString = dateToDayMonthYearString(untilDate);
-
-const years = getYears();
-const quarters = getQuarters();
-const CUSTOM = "Custom";
-const predefinedDates = [...years, ...quarters, {name: CUSTOM}]
-console.log(predefinedDates)
-const predefinedDatesMap = predefinedDates.reduce((map, predefinedDate) => {
-    map[predefinedDate.name] = predefinedDate;
-    return map
-}, {});
 
 function Statistics() {
     const classes = useStyles();
