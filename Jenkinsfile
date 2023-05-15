@@ -8,6 +8,7 @@ pipeline {
     stage('Initialize') {
       steps {
         script {
+            sh "npm --version"
             sh "npm install"
         }
       }
@@ -26,7 +27,7 @@ pipeline {
       steps {
         script {
             if (env.BRANCH_NAME == 'main') {
-                sh "docker-compose up -d --force-recreate --build"
+                sh "docker build -t rem_fe ."
             } else {
                 def userInput = false
                 try {
@@ -49,7 +50,7 @@ pipeline {
                 echo "Selected deployment option: ${userInput}"
 
                 if(userInput) {
-                    sh "docker-compose up -d --force-recreate --build"
+                    sh "docker build -t rem_fe ."
                 }
             }
         }

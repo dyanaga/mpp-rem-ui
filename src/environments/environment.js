@@ -1,3 +1,3 @@
 module.exports = {
-    "backendUrl": "http://localhost:8080/rem-be/api"
+    "backendUrl": "https://rem.dianagrigore.com/rem-be/api"
 }
