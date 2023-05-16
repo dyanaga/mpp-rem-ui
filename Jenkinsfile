@@ -22,12 +22,17 @@ pipeline {
       }
     }
 
+    stage('Dockerizing') {
+      steps {
+           sh "docker build -t rem_fe ."
+        }
+    }
 
     stage('Deployment') {
       steps {
         script {
             if (env.BRANCH_NAME == 'main') {
-                sh "docker build -t rem_fe ."
+                sh "kubectl rollout restart deployment rem-fe-deployment"
             } else {
                 def userInput = false
                 try {
@@ -50,7 +55,7 @@ pipeline {
                 echo "Selected deployment option: ${userInput}"
 
                 if(userInput) {
-                    sh "docker build -t rem_fe ."
+                    sh "kubectl rollout restart deployment rem-fe-deployment"
                 }
             }
         }
