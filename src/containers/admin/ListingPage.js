@@ -97,23 +97,25 @@ const modalFields = [
         label: 'Offers',
         type: 'list',
         borderColor: "green",
-
         fields: [
             {
                 id: 'price',
                 label: 'Price',
                 type: "text",
+                isDisabled: (mode) => true,
             },
             {
                 id: 'comment',
                 label: 'Comment',
-                type: 'text-multiline'
+                type: 'text-multiline',
+                isDisabled: (mode) => true,
             },
             {
                 id: 'timestamp',
                 label: 'Comment',
                 type: 'text',
-                getValue: body => dateStringToRomanianFormat(body.timestamp)
+                getValue: body => dateStringToRomanianFormat(body.timestamp),
+                isDisabled: (mode) => true,
             },
         ],
         rowTemplate: {price: 0, comment: ''}
@@ -128,16 +130,19 @@ const modalFields = [
                 id: 'name',
                 label: 'Name',
                 type: "text",
+                isDisabled: (mode) => true,
             },
             {
                 id: 'email',
                 label: 'Email',
-                type: 'text'
+                type: 'text',
+                isDisabled: (mode) => true,
             },
             {
                 id: 'phoneNumber',
                 label: 'Phone number',
-                type: 'text'
+                type: 'text',
+                isDisabled: (mode) => true,
             }
         ],
         rowTemplate: {name: '', email: '', phoneNumber: ''}
@@ -439,7 +444,8 @@ export default function ListingPage(props) {
                 getFilter={getFilter}
                 defaultBody={{name: "", address: "", rooms: 1, description: "", size: 5, neighbourhood: "", suggestedPrice: 0, offers: [], users: []}}
                 disableCreate={accountType === ACCOUNT_TYPE.GUEST || accountType === ACCOUNT_TYPE.CLIENT}
-                disableUpdate
+                disableUpdate={accountType === ACCOUNT_TYPE.GUEST || accountType === ACCOUNT_TYPE.CLIENT}
+                defaultOptionsIf={(row) => accountType === ACCOUNT_TYPE.DIRECTOR || accountType === ACCOUNT_TYPE.ADMIN || row.creatorUser.userId===userId}
                 disableActiveSort
                 initialOrder="asc"
                 initialOrderBy="name"

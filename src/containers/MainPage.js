@@ -30,12 +30,14 @@ import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import {ACCOUNT_TYPE, COOKIES} from "../constants";
 import EmptyPage from "../components/EmptyPage";
+import BulkOperations from "../components/BulkOperations";
 import UsersPage from "./admin/users/UsersPage";
 import {UserPage} from "./user/profile/UserPage";
 import ListingPage from "./admin/ListingPage";
 import MyOffersPage from "./MyOffersPage";
 import {Statistics} from "./admin/Statistics";
 import Cookies from "universal-cookie";
+import AllOffersPage from "./AllOffersPage";
 
 const drawerWidth = 240;
 const cookies = new Cookies();
@@ -220,24 +222,24 @@ export default function MainPage() {
                     {(accountType === ACCOUNT_TYPE.AGENT || accountType === ACCOUNT_TYPE.DIRECTOR || accountType === ACCOUNT_TYPE.ADMIN) && (<>
                         <List>
                             <ListSubheader inset>Agent options</ListSubheader>
-                            <ListItem button onClick={event => handleMenuSelection(event, menus.EMPTY)}>
-                                <ListItemIcon>
-                                    <PersonIcon/>
-                                </ListItemIcon>
-                                <ListItemText primary="Received reviews (TBA)"/>
-                            </ListItem>
+                            {/*<ListItem button onClick={event => handleMenuSelection(event, menus.EMPTY)}>*/}
+                            {/*    <ListItemIcon>*/}
+                            {/*        <PersonIcon/>*/}
+                            {/*    </ListItemIcon>*/}
+                            {/*    <ListItemText primary="Received reviews (TBA)"/>*/}
+                            {/*</ListItem>*/}
                             <ListItem button onClick={event => handleMenuSelection(event, menus.AGENT_LISTING_PAGE)}>
                                 <ListItemIcon>
                                     <PersonIcon/>
                                 </ListItemIcon>
                                 <ListItemText primary="My listings"/>
                             </ListItem>
-                            <ListItem button onClick={event => handleMenuSelection(event, menus.EMPTY)}>
-                                <ListItemIcon>
-                                    <PersonIcon/>
-                                </ListItemIcon>
-                                <ListItemText primary="Received offers (TBA)"/>
-                            </ListItem>
+                            {/*<ListItem button onClick={event => handleMenuSelection(event, menus.EMPTY)}>*/}
+                            {/*    <ListItemIcon>*/}
+                            {/*        <PersonIcon/>*/}
+                            {/*    </ListItemIcon>*/}
+                            {/*    <ListItemText primary="Received offers (TBA)"/>*/}
+                            {/*</ListItem>*/}
                         </List>
                         <Divider/>
                     </>)}
@@ -245,18 +247,18 @@ export default function MainPage() {
                         <List>
                             <ListSubheader inset>Director options</ListSubheader>
 
-                            <ListItem button onClick={event => handleMenuSelection(event, menus.EMPTY)}>
+                            <ListItem button onClick={event => handleMenuSelection(event, menus.ALL_OFFER_PAGE)}>
                                 <ListItemIcon>
                                     <PersonIcon/>
                                 </ListItemIcon>
-                                <ListItemText primary="All offers (TBA)"/>
+                                <ListItemText primary="All offers"/>
                             </ListItem>
-                            <ListItem button onClick={event => handleMenuSelection(event, menus.EMPTY)}>
-                                <ListItemIcon>
-                                    <PersonIcon/>
-                                </ListItemIcon>
-                                <ListItemText primary="All reviews(TBA)"/>
-                            </ListItem>
+                            {/*<ListItem button onClick={event => handleMenuSelection(event, menus.EMPTY)}>*/}
+                            {/*    <ListItemIcon>*/}
+                            {/*        <PersonIcon/>*/}
+                            {/*    </ListItemIcon>*/}
+                            {/*    <ListItemText primary="All reviews(TBA)"/>*/}
+                            {/*</ListItem>*/}
                             <ListItem button onClick={event => handleMenuSelection(event, menus.STATISTICS)}>
                                 <ListItemIcon>
                                     <DonutSmallIcon/>
@@ -275,11 +277,11 @@ export default function MainPage() {
                                 </ListItemIcon>
                                 <ListItemText primary="Users"/>
                             </ListItem>
-                            <ListItem button onClick={event => handleMenuSelection(event, menus.EMPTY)}>
+                            <ListItem button onClick={event => handleMenuSelection(event, menus.BULK)}>
                                 <ListItemIcon>
                                     <PersonIcon/>
                                 </ListItemIcon>
-                                <ListItemText primary="Bulk operations(TBA)"/>
+                                <ListItemText primary="Bulk operations"/>
                             </ListItem>
                         </List>
                         <Divider/>
@@ -291,6 +293,8 @@ export default function MainPage() {
                     <Container maxWidth="lg" className={classes.container}>
 
                         {selectedMenu === menus.EMPTY && <EmptyPage/>}
+
+                        {selectedMenu === menus.BULK && <BulkOperations/>}
 
                         {selectedMenu === menus.LISTING_PAGE && <ListingPage
                                 userId={userId}
@@ -312,6 +316,7 @@ export default function MainPage() {
                         />}
 
                         {selectedMenu === menus.STATISTICS && <Statistics/>}
+                        {selectedMenu === menus.ALL_OFFER_PAGE && <AllOffersPage/>}
 
 
                         {selectedMenu === menus.USER_PROFILE && <UserPage mode={"update"} userId={userId}/>}

@@ -34,6 +34,7 @@ function GenericCRUD(props) {
         idField = "id",
         tableCells = [],
         defaultOptions = true,
+        defaultOptionsIf,
         otherOptions,
         crudName = "crud",
         endpoint = "",
@@ -261,7 +262,7 @@ function GenericCRUD(props) {
                 <TableRow key={defaultId} onClick={event => handleTableRowClick(row)} hover={true}>
                     {tableCells(row)}
                     {
-                            defaultOptions && (
+                            defaultOptions && (!defaultOptionsIf || defaultOptionsIf(row)) && (
                                     <TableCell>
                                         <Button onClick={event => {
                                             event.stopPropagation()

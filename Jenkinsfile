@@ -1,8 +1,5 @@
 pipeline {
   agent any
-  parameters {
-    string(name: 'image_version', defaultValue: 'undefined')
-  }
 
   stages {
     stage('Initialize') {

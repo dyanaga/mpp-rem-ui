@@ -26,23 +26,30 @@ function GenericModal(props) {
     const [emptyFields, setEmptyFields] = React.useState([]);
     const [invalidFields, setInvalidFields] = React.useState([]);
 
+    let invalidFieldsAux = []
+    let emptyFieldsAux = []
+
     const handleContentChange = (id, value) => {
         setContent({...value});
     };
     const handleEmptinessChange = (fieldId, value) => {
         if (value === false && emptyFields.includes(fieldId)) {
-            setEmptyFields(emptyFields.filter(id => fieldId !== id))
+            emptyFieldsAux = emptyFieldsAux.filter(id => fieldId !== id)
+            setEmptyFields(emptyFieldsAux)
         }
         if (value === true && !emptyFields.includes(fieldId)) {
-            setEmptyFields([...emptyFields, fieldId])
+            emptyFieldsAux = [...emptyFieldsAux, fieldId]
+            setEmptyFields(emptyFieldsAux)
         }
     };
     const handleValidityChange = (fieldId, value) => {
         if (value === true && invalidFields.includes(fieldId)) {
-            setInvalidFields(invalidFields.filter(id => fieldId !== id))
+            invalidFieldsAux = invalidFieldsAux.filter(id => fieldId !== id)
+            setInvalidFields(invalidFieldsAux)
         }
         if (value === false && !invalidFields.includes(fieldId)) {
-            setInvalidFields([...invalidFields, fieldId])
+            invalidFieldsAux = [...invalidFieldsAux, fieldId]
+            setInvalidFields(invalidFieldsAux)
         }
     };
 

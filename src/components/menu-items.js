@@ -7,6 +7,8 @@ export const menus = {
     LISTING_PAGE: 206,
     AGENT_LISTING_PAGE: 207,
     CLIENT_OFFER_PAGE: 208,
+    BULK: 209,
+    ALL_OFFER_PAGE: 210,
     STATISTICS: 999,
 
 

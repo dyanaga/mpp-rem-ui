@@ -32,7 +32,7 @@ const userModalFields = [
         label: 'Password',
         type: "password",
         isValid: (value) => {
-            return value.match("(^(?=.*[A-Z].*[A-Z])(?=.*[!@#$&*])(?=.*[0-9].*[0-9])(?=.*[a-z].*[a-z].*[a-z]).{8,12}$|^$)") != null
+            return value.match("(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9])(?=.{8,})|^$") != null
         },
         errorMessage: "The password length should be strong and between 8 and 12 characters"
     },

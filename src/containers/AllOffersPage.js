@@ -96,11 +96,7 @@ const modalFields = [
     }
 ]
 
-export default function MyOffersPage(props) {
-
-    const {
-        userId,
-    } = props;
+export default function AllOffersPage(props) {
 
     const [comment, setComment] = React.useState('');
 
@@ -121,8 +117,8 @@ export default function MyOffersPage(props) {
         }
     ];
     const headCells = [
-        {id: 'name', label: 'Name', sortable: true},
-        {id: 'comment', label: 'Comment', sortable: true},
+        {id: 'name', label: 'Listing name', sortable: true},
+        {id: 'username', label: 'Username', sortable: true},
         {id: 'price', label: 'Price', sortable: true},
         {id: 'offerPrice', label: 'Offered price', sortable: true},
         {id: 'timestamp', label: 'Time', sortable: true},
@@ -147,7 +143,7 @@ export default function MyOffersPage(props) {
                         {row.listing.name}
                     </TableCell>
                     <TableCell>
-                        {row.comment}
+                        {row.user.name}
                     </TableCell>
                     <TableCell>
                         {row.listing.suggestedPrice} Euro
@@ -168,8 +164,8 @@ export default function MyOffersPage(props) {
                 idField="offerId"
                 tableCells={tableCells}
                 crudName="offer"
-                endpoint={ENDPOINTS.BASE + `/users/${userId}/offers`}
-                expand="listing"
+                endpoint={ENDPOINTS.OFFERS}
+                expand="listing,user"
                 filters={filters}
                 getFilter={getFilter}
                 defaultBody={{name: "", address: "", rooms: 1, description: "", size: 5, neighbourhood: "", suggestedPrice: 0, offers: [], users: []}}
