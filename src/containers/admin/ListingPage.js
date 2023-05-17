@@ -368,7 +368,7 @@ export default function ListingPage(props) {
 
                     <TableCell>
                         {
-                            accountType !== ACCOUNT_TYPE.GUEST && accountType !== ACCOUNT_TYPE.CLIENT ?
+                            accountType !== ACCOUNT_TYPE.GUEST ?
                                     (
                                             row.offers.filter(offer => offer.userId === userId).length === 0 && !currentOffers.includes(row.listingId) ?
                                                     (
